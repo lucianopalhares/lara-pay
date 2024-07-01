@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\RuleCpfCnpj;
 
 class PaymentRequest extends FormRequest
 {
@@ -24,7 +25,7 @@ class PaymentRequest extends FormRequest
         return [
             'value' => 'required',
             'name' => 'required', 
-            'cpfCpj' => 'required'
+            'cpfCpj' => ['required', new RuleCpfCnpj]
         ];
     }
 
