@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/create-credit-card', [PaymentController::class, 'createCreditCard'])->name('payment.create-credit-card');
         Route::post('/validate', [PaymentController::class, 'validatePayment'])->name('payment.validate');
         Route::post('/validate-credit-card', [PaymentController::class, 'validatePaymentCreditCard'])->name('payment.validate-credit-card');
+        Route::post('/process', [PaymentController::class, 'process'])->name('payment.process');
     });
 });
 

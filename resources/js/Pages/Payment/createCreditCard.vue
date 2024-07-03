@@ -269,7 +269,8 @@ export default {
         PrimaryButton
     },
     props: {
-
+        billingType: String, 
+        gateway: String
     }, 
     data() {
         return {
@@ -287,7 +288,9 @@ export default {
                 addressNumber: '45',
                 addressComplement: 'rua teste',
                 phone: '64-959899-48145',
-                remoteIp: '4585'
+                remoteIp: '4585',
+                billingType: this.billingType,
+                gateway: this.gateway
             })
         }
     }, 
@@ -302,15 +305,19 @@ export default {
                // console.log('validate', error)
                 this.showErrorsValidated(error.response.data.errors);
                 
+                return;
             }
+
+            this.process();
         }, 
 
-        async createPayment() {
+        async process() {
 
-        }, 
-
-        async finallyPayment() {
-
+            try {
+                const process = await axios.post(route('payment.process'), this.form);
+            } catch (error) {
+                console.log('process', error)
+            }
         }, 
 
         async savePayment() {

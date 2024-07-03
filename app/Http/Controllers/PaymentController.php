@@ -8,9 +8,12 @@ use Inertia\Response;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\PaymentRequest;
 use App\Http\Requests\PaymentCreditCardRequest;
+use App\Enums\BillingTypeEnum;
+use App\Contracts\PaymentGatewayInterface;
 
 class PaymentController extends Controller
 {
+    public $gateway = 'ASAAS';
     /**
      * Pagina do boleto
      * 
@@ -18,7 +21,12 @@ class PaymentController extends Controller
      */
     public function createBoleto(): Response
     {
-        return Inertia::render('Payment/createBoleto');
+        return Inertia::render('Payment/createBoleto',
+            [   
+                'billingType' => BillingTypeEnum::BOLETO->name,
+                'gateway' => $this->gateway
+            ]
+        );
     }
 
     /**
@@ -28,7 +36,12 @@ class PaymentController extends Controller
      */
     public function createPix(): Response
     {
-        return Inertia::render('Payment/createPix');
+        return Inertia::render('Payment/createPix',
+            [   
+                'billingType' => BillingTypeEnum::PIX->name,
+                'gateway' => $this->gateway
+            ]
+        );
     }
     
     /**
@@ -38,7 +51,12 @@ class PaymentController extends Controller
      */
     public function createCreditCard(): Response
     {
-        return Inertia::render('Payment/createCreditCard');
+        return Inertia::render('Payment/createCreditCard',
+            [
+                'billingType' => BillingTypeEnum::CREDIT_CARD->name,
+                'gateway' => $this->gateway
+            ]
+        );
     }
 
     /**
@@ -61,6 +79,23 @@ class PaymentController extends Controller
     public function validatePaymentCreditCard(PaymentCreditCardRequest $request): JsonResponse
     {
         return response()->json(['data'=>'validado com sucesso!']);
+    }
+
+    /**
+     * Metodo para gerar pagamento
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function process(Request $request): JsonResponse
+    {
+        $gateway = app()->make(PaymentGatewayInterface::class,
+            $request->all()
+        );
+
+        $processGateway = $gateway->process($request->all());
+
+        return response()->json($processGateway);
     }
 
 }

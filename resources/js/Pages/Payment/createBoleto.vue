@@ -103,17 +103,20 @@ export default {
         PrimaryButton
     },
     props: {
-
+        billingType: String, 
+        gateway: String
     }, 
     data() {
         return {
             form: useForm({
                 value: '', 
                 name: '', 
-                cpfCnpj: ''
+                cpfCnpj: '',
+                billingType: this.billingType,
+                gateway: this.gateway
             })
         }
-    }, 
+    },
     methods: {
         async validatePayment() {
            
@@ -122,15 +125,20 @@ export default {
             } catch (error) {
                 this.showErrorsValidated(error.response.data.errors);
                 console.log('validate', error)
+
+                return;
             }
+
+            this.process();
         }, 
 
-        async createPayment() {
+        async process() {
 
-        }, 
-
-        async finallyPayment() {
-
+            try {
+                const process = await axios.post(route('payment.process'), this.form);
+            } catch (error) {
+                console.log('process', error)
+            }
         }, 
 
         async savePayment() {

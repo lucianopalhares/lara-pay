@@ -25,7 +25,7 @@ class PaymentRequest extends FormRequest
         return [
             'value' => 'required',
             'name' => 'required', 
-            'cpfCpj' => ['required', new RuleCpfCnpj]
+            'cpfCnpj' => ['required', new RuleCpfCnpj]
         ];
     }
 
@@ -39,7 +39,7 @@ class PaymentRequest extends FormRequest
         return [
             'value.required' => 'Digite o valor',
             'name.required' => 'Digite o nome', 
-            'cpfCpj.required' => 'Digite o cpf ou cnpj'
+            'cpfCnpj.required' => 'Digite o cpf ou cnpj'
         ];
     }
 }
