@@ -6,7 +6,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import {mask} from 'vue-the-mask';
 
@@ -27,6 +27,23 @@ import {mask} from 'vue-the-mask';
                     <form @submit.prevent="validatePayment"
                         class="max-w-md mx-auto m-20"
                     >
+
+                        <div class="relative z-0 w-full mb-5 group">
+                            <InputLabel for="externalReference" value="Digite o Pedido" />
+
+                            <TextInput
+                                id="externalReference"
+                                type="text"
+                                class="mt-1 block w-full"
+                                v-model="form.externalReference"
+                                required
+                                autofocus
+                                autocomplete="externalReference"
+                            />
+
+                            <InputError class="mt-2" :message="form.errors.externalReference" />
+                        </div>
+
                         <div class="relative z-0 w-full mb-5 group">
                             <InputLabel for="value" value="Valor em reais R$" />
 
@@ -257,6 +274,7 @@ import {mask} from 'vue-the-mask';
 
 <script>
 
+const page = usePage();
 
 export default {
     directives: {mask},
@@ -290,7 +308,10 @@ export default {
                 phone: '64-959899-48145',
                 remoteIp: '4585',
                 billingType: this.billingType,
-                gateway: this.gateway
+                gateway: this.gateway,
+                customer: page.props.auth.user.customer,
+                userId: page.props.auth.user.id,
+                externalReference: ''
             })
         }
     }, 
@@ -339,7 +360,7 @@ export default {
             this.form.errors.addressNumber = data.addressNumber != undefined ? data.addressNumber[0] : '';
             this.form.errors.addressComplement = data.addressComplement != undefined ? data.addressComplement[0] : '';
             this.form.errors.phone = data.phone != undefined ? data.phone[0] : '';
-
+            this.form.errors.externalReference = data.externalReference != undefined ? data.externalReference[0] : '';
         }
     }
 }

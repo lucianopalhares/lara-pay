@@ -37,7 +37,10 @@ class PaymentCreditCardRequest extends FormRequest
             'addressNumber' => 'required',
             'addressComplement' => 'required',
             'phone' => 'required', 
-            'remoteIp' => 'required'
+            'remoteIp' => 'required',
+            'customer'=> 'nullable', 
+            'userId'=> 'required', 
+            'externalReference'=> 'required', 
         ];
     }
 
@@ -61,6 +64,8 @@ class PaymentCreditCardRequest extends FormRequest
             'addressComplement.required' => 'Digite o endereço',
             'number.required' => 'Digite o numero do cartão',
             'number.digits' => 'Digite o numero do cartão corretamente',
+            'userId.required' => 'Cliente nao encontrado',
+            'externalReference.required' => 'Digite o numero do pedido',
         ];
     }
 }

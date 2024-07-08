@@ -25,7 +25,10 @@ class PaymentRequest extends FormRequest
         return [
             'value' => 'required',
             'name' => 'required', 
-            'cpfCnpj' => ['required', new RuleCpfCnpj]
+            'cpfCnpj' => ['required', new RuleCpfCnpj],
+            'customer'=> 'nullable', 
+            'userId'=> 'required', 
+            'externalReference'=> 'required', 
         ];
     }
 
@@ -39,7 +42,9 @@ class PaymentRequest extends FormRequest
         return [
             'value.required' => 'Digite o valor',
             'name.required' => 'Digite o nome', 
-            'cpfCnpj.required' => 'Digite o cpf ou cnpj'
+            'cpfCnpj.required' => 'Digite o cpf ou cnpj',
+            'userId.required' => 'Cliente nao encontrado',
+            'externalReference.required' => 'Digite o numero do pedido',
         ];
     }
 }
