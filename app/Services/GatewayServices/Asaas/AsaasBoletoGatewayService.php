@@ -38,7 +38,7 @@ class AsaasBoletoGatewayService extends AsaasHttpGatewayService implements Payme
             $this->message = 'Boleto gerado com sucesso. Clique no link abaixo para realizar o pagamento.';
               //code...
         } catch (\Exception $e) {
-            $this->status = HttpStatusEnum::SERVER_ERROR->value;
+            $this->status = HttpStatusEnum::SERVER_ERROR;
             $this->data = (string) $e->getMessage();
             $this->message = 'Estamos com instabilidade no sistema. Tente novamente mais tarde.';
         }

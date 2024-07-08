@@ -95,7 +95,7 @@ class PaymentController extends Controller
 
         $processGateway = $gateway->process($request->all());
 
-        return response()->json($processGateway);
+        return response()->json($processGateway, $processGateway['status']);
     }
 
 }
