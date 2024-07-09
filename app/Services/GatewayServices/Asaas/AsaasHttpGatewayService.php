@@ -16,7 +16,7 @@ class AsaasHttpGatewayService
 
     private string $customer;
 
-    protected int $status;
+    protected HttpStatusEnum $status;
     protected string $message = '';
     protected string $data = '';
 
@@ -84,7 +84,7 @@ class AsaasHttpGatewayService
      * Pegar url
      * 
      * @param string $endpoint
-     * @return void
+     * @return string
      */
     protected function getUrl(): string 
     {
@@ -99,7 +99,7 @@ class AsaasHttpGatewayService
      * 
      * @param Array $data 
      * @param HttpMethodEnum $method
-     * @return Array
+     * @return void
      */
     public function send(array $data, HttpMethodEnum $method): void 
     {
@@ -130,24 +130,29 @@ class AsaasHttpGatewayService
             );
             
             $this->data = (string) $response->getBody();
-            $this->status = (int) $response->getStatusCode();
+            $this->status = HttpStatusEnum::tryFrom((int) $response->getStatusCode());
            
         } catch (ClientException $e) {
-            $this->data = (string) $e->getMessage();
-            $this->status = (int) $e->getCode();
+            $this->data = (string) $e->getResponse()->getBody()->getContents();
+            $this->status = HttpStatusEnum::tryFrom((int) $e->getCode());
         }
     }
 
+    /**
+     * Retorno do gateway
+     * 
+     * @return Array
+     */
     protected function response(): array 
     {
         $array = [
-            'status' => $this->status,
+            'status' => $this->status->value,
             'data' => $this->data, 
             'message' => $this->message,
-            'success' => $this->status === HttpStatusEnum::SUCCESS->value
+            'success' => $this->status === HttpStatusEnum::SUCCESS
         ];
 
-        if ($array['success'] === true) {
+        if ($this->status === HttpStatusEnum::SUCCESS || $this->status === HttpStatusEnum::ERROR) {
             $array['data'] = json_decode($array['data'], true);
         }
 

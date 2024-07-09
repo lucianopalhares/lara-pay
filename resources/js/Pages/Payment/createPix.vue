@@ -52,7 +52,7 @@ import {mask} from 'vue-the-mask';
                                 type="text"
                                 class="mt-1 block w-full"
                                 v-model="form.value"
-                                
+                                required
                                 autofocus
                                 autocomplete="value"
                                 v-mask="['#.##','##.##','###.##','####.##','#####.##','######.##']"
@@ -95,7 +95,7 @@ import {mask} from 'vue-the-mask';
                         </div>
 
                         <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                            Gerar Boleto
+                            Gerar QRCode
                         </PrimaryButton>
 
                     </form>
