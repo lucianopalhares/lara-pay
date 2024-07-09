@@ -26,9 +26,9 @@ class AppServiceProvider extends ServiceProvider
 
             $classes = [
                 'ASAAS' => [
-                    BillingTypeEnum::BOLETO->value => AsaasBoletoGatewayService::class,
-                    BillingTypeEnum::CREDIT_CARD->value => AsaasCreditCardGatewayService::class,
-                    BillingTypeEnum::PIX->value => AsaasPixGatewayService::class,
+                    BillingTypeEnum::BOLETO->name => AsaasBoletoGatewayService::class,
+                    BillingTypeEnum::CREDIT_CARD->name => AsaasCreditCardGatewayService::class,
+                    BillingTypeEnum::PIX->name => AsaasPixGatewayService::class,
                 ]
             ];
 

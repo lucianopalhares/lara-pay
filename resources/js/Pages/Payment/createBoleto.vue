@@ -10,6 +10,7 @@ import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import {mask} from 'vue-the-mask';
 
+import ShowResult from '@/Components/ShowResult.vue';
 </script>
 
 <template>
@@ -20,7 +21,7 @@ import {mask} from 'vue-the-mask';
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Gerar Boleto</h2>
         </template>
 
-        <div class="py-12">
+        <div class="py-12" v-if="this.success === false">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     
@@ -104,6 +105,15 @@ import {mask} from 'vue-the-mask';
                 </div>
             </div>
         </div>
+
+        <ShowResult
+            :success="this.success" 
+            :response="this.response" 
+            :form="this.form"
+            :title="'Boleto gerado com sucesso!'"
+        >
+        </ShowResult>
+
     </AuthenticatedLayout>
 </template>
 
@@ -119,7 +129,8 @@ export default {
         TextInput, 
         InputError, 
         InputLabel, 
-        PrimaryButton
+        PrimaryButton,
+        ShowResult
     },
     props: {
         billingType: String, 
@@ -128,15 +139,17 @@ export default {
     data() {
         return {
             form: useForm({
-                value: '', 
-                name: '', 
-                cpfCnpj: '',
+                value: '5000', 
+                name: page.props.auth.user.name,
+                cpfCnpj: '20.357.915/0001-66',
                 billingType: this.billingType,
                 gateway: this.gateway, 
                 customer: page.props.auth.user.customer,
                 userId: page.props.auth.user.id,
-                externalReference: ''
+                externalReference: '48585'
             }),
+            success: false,
+            response: Object
         }
     },
     methods: {
@@ -157,7 +170,14 @@ export default {
         async process() {
 
             try {
-                const process = await axios.post(route('payment.process'), this.form);               
+                const process = await axios.post(route('payment.process'), this.form);   
+                
+                if (process.status == 200) {
+                    this.success = true;
+                    this.response = process.data;
+                }
+
+                console.log('process', process)
                 
             } catch (error) {
                 console.log('process', error)

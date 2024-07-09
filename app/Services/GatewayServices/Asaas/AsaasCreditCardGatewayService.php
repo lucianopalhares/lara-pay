@@ -8,6 +8,7 @@ use App\Enums\HttpMethodEnum;
 use App\Enums\HttpStatusEnum;
 use App\Enums\BillingTypeEnum;
 use Carbon\Carbon;
+use App\Http\Resources\AsaasPaymentResource;
 
 class AsaasCreditCardGatewayService extends AsaasHttpGatewayService implements PaymentGatewayInterface
 {
@@ -43,10 +44,10 @@ class AsaasCreditCardGatewayService extends AsaasHttpGatewayService implements P
             $paymentCreated = $response['success'] === true;
 
             if ($paymentCreated === true) {
-                $hasPaymentId = empty($response['data']['id']) === false;
+                $hasPaymentId = empty($response['data']->id) === false;
 
                 if ($hasPaymentId === true) {
-                    $paymentId = $response['data']['id'];
+                    $paymentId = $response['data']->id;
 
                     $data['id'] = $paymentId;
 
@@ -76,7 +77,18 @@ class AsaasCreditCardGatewayService extends AsaasHttpGatewayService implements P
                     $response = $this->response();
 
                     if ($response['success'] === true) {
-                        if ($response['data']['status'] == 'CONFIRMED') {
+                        $data = $response['data'];
+
+                        $data->creditCardBrand = $data->creditCard->creditCardBrand;
+                        $data->creditCardNumber = $data->creditCard->creditCardNumber;  
+                        $data->canBePaidAfterDueDate = false;
+                        $data->encodedImage = null;
+                        $data->payload = null;
+                        $data->billingType = BillingTypeEnum::tryFromName($data->billingType)->value;
+                        
+                        $this->data = new AsaasPaymentResource((object) $data);
+
+                        if ($response['data']->status == 'CONFIRMED') {
                             $this->message = 'Pagamento com cartão efetuado com sucesso';
                         } else {
                             $this->message = 'Pagamento processado. Aguarde enquanto a operadora do cartão valida o pagamento.';
@@ -89,7 +101,7 @@ class AsaasCreditCardGatewayService extends AsaasHttpGatewayService implements P
 
         } catch (\Exception $e) {
             $this->status = HttpStatusEnum::SERVER_ERROR;
-            $this->data = (string) $e->getMessage();
+            $this->error = (string) $e->getMessage();
             $this->message = 'Estamos com instabilidade no sistema. Tente novamente mais tarde.';
         }
 

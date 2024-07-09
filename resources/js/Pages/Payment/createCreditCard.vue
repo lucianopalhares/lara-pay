@@ -10,6 +10,7 @@ import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import {mask} from 'vue-the-mask';
 
+import ShowResult from '@/Components/ShowResult.vue';
 </script>
 
 <template>
@@ -20,7 +21,7 @@ import {mask} from 'vue-the-mask';
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Pagar Com Cartão de Crédito</h2>
         </template>
 
-        <div class="py-12">
+        <div class="py-12" v-if="this.success === false">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     
@@ -269,6 +270,24 @@ import {mask} from 'vue-the-mask';
                 </div>
             </div>
         </div>
+
+        <ShowResult
+            :success="this.success" 
+            :response="this.response" 
+            :form="this.form"
+            :title="'Pagamento processado com sucesso!'"
+        >
+            <ul>
+                <li>
+                    Cartão: ************{{ this.response.data.creditCardNumber }}
+                </li>
+                <li>
+                    Bandeira: {{ this.response.data.creditCardBrand }}
+                </li>
+            </ul>
+
+        </ShowResult>
+        
     </AuthenticatedLayout>
 </template>
 
@@ -296,13 +315,13 @@ export default {
                 value: '88', 
                 name: 'adfsadf', 
                 holderName: 'adfsadf',
-                number: '4555',
+                number: '4555455565984558',
                 expiryMonth: '12',
                 expiryYear: '2025',
                 ccv: '159',
                 email: 'teste@gmail.com',
-                cpfCnpj: '155.456.849-85',
-                postalCode: '78888-599',
+                cpfCnpj: '20.357.915/0001-66',
+                postalCode: '01153-000',
                 addressNumber: '45',
                 addressComplement: 'rua teste',
                 phone: '64-959899-48145',
@@ -312,7 +331,9 @@ export default {
                 customer: page.props.auth.user.customer,
                 userId: page.props.auth.user.id,
                 externalReference: ''
-            })
+            }),
+            success: false,
+            response: Object
         }
     }, 
     methods: {
@@ -336,6 +357,14 @@ export default {
 
             try {
                 const process = await axios.post(route('payment.process'), this.form);
+
+                if (process.status == 200) {
+                    this.success = true;
+                    this.response = process.data;
+                }
+
+                console.log('process', process)
+
             } catch (error) {
                 console.log('process', error)
             }

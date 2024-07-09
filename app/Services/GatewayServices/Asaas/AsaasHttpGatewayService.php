@@ -18,7 +18,8 @@ class AsaasHttpGatewayService
 
     protected HttpStatusEnum $status;
     protected string $message = '';
-    protected string $data = '';
+    protected object $data;
+    protected string $error = '';
 
     public function __construct()
     {
@@ -46,7 +47,7 @@ class AsaasHttpGatewayService
                 $response = $this->response();
 
                 if ($response['success'] === true) {
-                    $this->customer = (string) $response['data']['id'];
+                    $this->customer = (string) $response['data']->id;
 
                     $user = \App\Models\User::find($data['userId']);
                     $user->customer = $this->customer;
@@ -129,11 +130,11 @@ class AsaasHttpGatewayService
                 $request
             );
             
-            $this->data = (string) $response->getBody();
+            $this->data = json_decode((string) $response->getBody());
             $this->status = HttpStatusEnum::tryFrom((int) $response->getStatusCode());
            
         } catch (ClientException $e) {
-            $this->data = (string) $e->getResponse()->getBody()->getContents();
+            $this->error = (string) $e->getResponse()->getBody()->getContents();
             $this->status = HttpStatusEnum::tryFrom((int) $e->getCode());
         }
     }
@@ -147,13 +148,14 @@ class AsaasHttpGatewayService
     {
         $array = [
             'status' => $this->status->value,
-            'data' => $this->data, 
+            'data' => $this->data,
             'message' => $this->message,
-            'success' => $this->status === HttpStatusEnum::SUCCESS
+            'success' => $this->status === HttpStatusEnum::SUCCESS,
+            'error' => $this->error
         ];
 
-        if ($this->status === HttpStatusEnum::SUCCESS || $this->status === HttpStatusEnum::ERROR) {
-            $array['data'] = json_decode($array['data'], true);
+        if ($this->status === HttpStatusEnum::ERROR) {
+            $array['data'] = json_decode($this->error);
         }
 
         return $array;
