@@ -41,6 +41,18 @@ const showingNavigationDropdown = ref(false);
                                 </NavLink>
                             </div>
 
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('payment.create-credit-card')" :active="route().current('payment.create-credit-card')">
+                                    Pagar com Cartão
+                                </NavLink>
+                            </div>
+
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                <NavLink :href="route('payment.create-pix')" :active="route().current('payment.create-pix')">
+                                    Pagar com Pix
+                                </NavLink>
+                            </div>
+
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ms-6">

@@ -14,11 +14,11 @@ import ShowResult from '@/Components/ShowResult.vue';
 </script>
 
 <template>
-    <Head title="Gerar Boleto" />
+    <Head title="Gerar Pix QRCode " />
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Gerar Boleto</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Gerar Pix QRCode  </h2>
         </template>
 
         <div class="py-12" v-if="this.success === false">
@@ -96,11 +96,10 @@ import ShowResult from '@/Components/ShowResult.vue';
                         </div>
 
                         <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                            Gerar Boleto
+                            Gerar QRCode
                         </PrimaryButton>
 
                     </form>
-
 
                 </div>
             </div>
@@ -110,8 +109,14 @@ import ShowResult from '@/Components/ShowResult.vue';
             :success="this.success" 
             :response="this.response" 
             :form="this.form"
-            :title="'Boleto gerado com sucesso!'"
+            :title="'QRCode gerado com sucesso!'"
         >
+            <img :src="'data:image/jpeg;base64, ' + this.response.data.encodedImage">
+       
+            <PrimaryButton @click="copyText" class="mt-10" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                Pix Copia e Cola
+            </PrimaryButton>
+
         </ShowResult>
 
     </AuthenticatedLayout>
@@ -151,7 +156,7 @@ export default {
             success: false,
             response: Object
         }
-    },
+    }, 
     methods: {
         async validatePayment() {
            
@@ -170,15 +175,15 @@ export default {
         async process() {
 
             try {
-                const process = await axios.post(route('payment.process'), this.form);   
-                
+                const process = await axios.post(route('payment.process'), this.form);
+            
                 if (process.status == 200) {
                     this.success = true;
                     this.response = process.data;
                 }
 
                 console.log('process', process)
-                
+
             } catch (error) {
                 console.log('process', error)
             }
@@ -193,6 +198,25 @@ export default {
             this.form.errors.name = data.name != undefined ? data.name[0] : '';
             this.form.errors.cpfCnpj = data.cpfCnpj != undefined ? data.cpfCnpj[0] : '';
             this.form.errors.externalReference = data.externalReference != undefined ? data.externalReference[0] : '';
+        },
+
+        copyText() {
+            const textToCopy = this.response.data.payload;
+            
+            // Cria um elemento de texto temporário
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = textToCopy;
+            document.body.appendChild(tempTextArea);
+
+            // Seleciona e copia o texto
+            tempTextArea.select();
+            document.execCommand('copy');
+
+            // Remove o elemento de texto temporário
+            document.body.removeChild(tempTextArea);
+
+            // Feedback de cópia
+            alert('Copiado!');
         }
     }
 }
